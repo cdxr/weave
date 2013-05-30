@@ -50,24 +50,24 @@ instance (Show c, Show a) => Show (Weave c a) where
     showsPrec d w = showParen (d > 10) $
         showString "fromEithers " . shows (toEithers w)
 
-instance Functor (Weave t) where
+instance Functor (Weave c) where
     fmap = Tr.fmapDefault
 
-instance Foldable (Weave t) where
+instance Foldable (Weave c) where
     foldMap = Tr.foldMapDefault
 
-instance Traversable (Weave t) where
+instance Traversable (Weave c) where
     traverse f (Weave es) = Weave <$> Tr.for es (pure . Left ||| fmap Right . f)
 
-instance Monoid (Weave t a) where
+instance Monoid (Weave c a) where
     mempty = Weave []
     Weave xs `mappend` Weave ys = Weave (xs ++ ys)
 
 
-unit :: a -> Weave t a
+unit :: a -> Weave c a
 unit = Weave . (:[]) . Right
 
-context :: [t] -> Weave t a
+context :: [c] -> Weave c a
 context = Weave . map Left
 
 
@@ -75,14 +75,14 @@ context = Weave . map Left
 weave :: (c -> b -> b) -> (a -> b -> b) -> b -> Weave c a -> b
 weave fc fa x = foldr (either fc fa) x . toEithers
 
-transcribe :: (Monoid t) => (a -> t) -> Weave t a -> t
+transcribe :: (Monoid c) => (a -> c) -> Weave c a -> c
 transcribe f = mconcat . map (either id f) . toEithers
 
-transcribeA :: (Monoid t, Applicative f) => (a -> f t) -> Weave t a -> f t
+transcribeA :: (Monoid c, Applicative f) => (a -> f c) -> Weave c a -> f c
 transcribeA f = fmap mconcat . traverse (either pure f) . toEithers
 
 
-normalize :: (Monoid t) => Weave t a -> Weave t a
+normalize :: (Monoid c) => Weave c a -> Weave c a
 normalize = fromEithers . foldMapLefts id . toEithers
 
 
