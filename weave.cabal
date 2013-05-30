@@ -13,4 +13,4 @@ cabal-version:       >=1.8
 
 library
   exposed-modules:     Data.Weave
-  build-depends:       base ==4.6.*
+  build-depends:       base ==4.6.*, bifunctors ==3.2.*

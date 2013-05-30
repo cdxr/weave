@@ -21,12 +21,15 @@ module Data.Weave
 , weave
 , transcribe
 , transcribeA
+-- * Transformations
+, mapContext
 -- * Other
 , normalize
 )
 where
 
-import Control.Arrow
+import Control.Arrow    ( (|||) )
+import Data.Bifunctor
 import Control.Applicative
 import Data.Monoid
 import Data.Either      ( lefts, rights )
@@ -53,6 +56,9 @@ instance (Show c, Show a) => Show (Weave c a) where
 instance Functor (Weave c) where
     fmap = Tr.fmapDefault
 
+instance Bifunctor Weave where
+    bimap l r = fromEithers . map (bimap l r) . toEithers
+
 instance Foldable (Weave c) where
     foldMap = Tr.foldMapDefault
 
@@ -70,6 +76,10 @@ unit = Weave . (:[]) . Right
 context :: [c] -> Weave c a
 context = Weave . map Left
 
+-- | A specialized version of 'first' from Data.Bifunctor
+mapContext :: (c -> d) -> Weave c a -> Weave d a
+mapContext = first
+
 
 -- | Perform a right fold over a 'Weave'.
 weave :: (c -> b -> b) -> (a -> b -> b) -> b -> Weave c a -> b
@@ -80,7 +90,6 @@ transcribe f = mconcat . map (either id f) . toEithers
 
 transcribeA :: (Monoid c, Applicative f) => (a -> f c) -> Weave c a -> f c
 transcribeA f = fmap mconcat . traverse (either pure f) . toEithers
-
 
 normalize :: (Monoid c) => Weave c a -> Weave c a
 normalize = fromEithers . foldMapLefts id . toEithers
