@@ -129,4 +129,4 @@ foldMapLefts f = mapAdjacentEithers ((:[]) . Left . foldMap f) (map Right)
 
 
 test :: Weave Char Int
-test = context "ab" <> unit 23 <> context "c" <> unit 12
+test = someL "ab" <> unitR 23 <> unitL 'c' <> unitR 12
