@@ -15,8 +15,10 @@ module Data.Weave
 , fromEithers
 , toEithers
 -- * Constructors
-, unit
-, context
+, unitL
+, unitR
+, someL
+, someR
 -- * Destructors
 , weave
 , transcribe
@@ -70,11 +72,19 @@ instance Monoid (Weave c a) where
     Weave xs `mappend` Weave ys = Weave (xs ++ ys)
 
 
-unit :: a -> Weave c a
-unit = Weave . (:[]) . Right
+unitL :: c -> Weave c a
+unitL = Weave . (:[]) . Left
 
-context :: [c] -> Weave c a
-context = Weave . map Left
+-- | Equivalent to 'pure'
+unitR :: a -> Weave c a
+unitR = Weave . (:[]) . Right
+
+someL :: [c] -> Weave c a
+someL = Weave . map Left
+
+someR :: [a] -> Weave c a
+someR = Weave . map Right
+
 
 -- | A specialized version of 'first' from Data.Bifunctor
 mapContext :: (c -> d) -> Weave c a -> Weave d a
