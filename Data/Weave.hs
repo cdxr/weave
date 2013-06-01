@@ -21,6 +21,7 @@ module Data.Weave
 , someR
 -- * Destructors
 , weave
+, flatten
 , transcribe
 , transcribeA
 -- * Transformations
@@ -90,10 +91,12 @@ someR = Weave . map Right
 mapContext :: (c -> d) -> Weave c a -> Weave d a
 mapContext = first
 
-
 -- | Perform a right fold over a 'Weave'.
 weave :: (c -> b -> b) -> (a -> b -> b) -> b -> Weave c a -> b
 weave fc fa x = foldr (either fc fa) x . toEithers
+
+flatten :: Weave a a -> [a]
+flatten = weave (:) (:) []
 
 transcribe :: (Monoid c) => (a -> c) -> Weave c a -> c
 transcribe f = mconcat . map (either id f) . toEithers
