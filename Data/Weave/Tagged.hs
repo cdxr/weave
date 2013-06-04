@@ -116,6 +116,12 @@ listPairs = toList . runTagged
 mapTags :: (t -> u) -> Tagged t a -> Tagged u a
 mapTags = Data.Bifunctor.first
 
+reduceByTag :: (Applicative f) => (t -> f a) -> Tagged t a -> f [a]
+reduceByTag f = sequenceA . tagged pure (const . f)
+
+reduceByTagM :: (Monad m) => (t -> m a) -> Tagged t a -> m [a]
+reduceByTagM f = Prelude.sequence . tagged return (const . f)
+
 {-
 traverseTaggeds :: (Applicative f) => (t -> f a) -> Tagged t a -> f [a]
 traverseTaggeds f = transcribeA (f . fst)
