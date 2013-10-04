@@ -1,6 +1,6 @@
 {-|
 Module      : Data.Weave.Tagged
-Copyright   : (c) Craig Roche 2013
+Copyright   : (c) 2013 Craig Roche
 License     : BSD-style
 
 Maintainer  : cdxr01@gmail.com
@@ -9,8 +9,7 @@ Portability : portable
 
 -}
 
-module Data.Weave.Tagged
-where
+module Data.Weave.Tagged where
 
 import Control.Arrow ( (***) )
 
@@ -48,7 +47,7 @@ instance Foldable (Tagged t) where
     foldMap = foldMapDefault
 
 
--- Constructors
+-- * Constructors
 
 -- | A value without a tag.
 untag :: a -> Tagged t a
@@ -74,7 +73,7 @@ fromAssocList = mconcat . map f
     f (Just t,  a) = tag t a
 
 
--- Destructors
+-- * Destructors
 
 -- | Reduce a 'Tagged' to a list, using a function on tagless values and a
 -- function on tagged values.
@@ -107,12 +106,12 @@ listPairs :: Tagged t a -> [(t, a)]
 listPairs = toList . runTagged
 
 
--- Transformations
+-- * Transformations
 
 --liftWeave :: (Weave a (t, a) -> Weave b (s, b)) -> Tagged t a -> Tagged s b
 --liftWeave f = Tagged . f . runTagged
 
--- | A specialization of 'Data.Bifunctor.first'
+-- | Map over all tags. This is a specialization of 'Data.Bifunctor.first'
 mapTags :: (t -> u) -> Tagged t a -> Tagged u a
 mapTags = Data.Bifunctor.first
 
