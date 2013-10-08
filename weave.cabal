@@ -1,5 +1,5 @@
 name:                weave
-version:             0.2.1.1
+version:             0.3.0.0
 -- synopsis:            
 -- description:         
 license:             BSD3
@@ -12,5 +12,5 @@ build-type:          Simple
 cabal-version:       >=1.8
 
 library
-  exposed-modules:     Data.Weave, Data.Weave.Tagged
-  build-depends:       base ==4.6.*, bifunctors ==3.2.*
+  exposed-modules:     Data.Weave
+  build-depends:       base ==4.6.*, bifunctors ==3.2.*, pipes ==4.0.*, either ==3.4.*, transformers ==0.3.*
