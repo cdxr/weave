@@ -26,7 +26,7 @@ import Data.Weave
 
 
 newtype Tagged t a = Tagged { runTagged :: Weave a (t, a) }
-    deriving (Show, Eq, Ord)
+    deriving Show
 
 instance Functor (Tagged t) where
     fmap = fmapDefault
@@ -51,19 +51,19 @@ instance Foldable (Tagged t) where
 
 -- | A value without a tag.
 untag :: a -> Tagged t a
-untag = Tagged . unitL
+untag = Tagged . weave
 
 -- | A value annotated with a tag.
 tag :: t -> a -> Tagged t a
-tag t a = Tagged $ unitR (t, a)
+tag t a = Tagged $ pure (t, a)
 
 -- | A list of untagged values
 list :: [a] -> Tagged t a
-list = Tagged . someL
+list = foldMap untag
 
 -- | A list of tag-value pairs
 pairs :: [(t, a)] -> Tagged t a
-pairs = Tagged . someR
+pairs = foldMap (uncurry tag)
 
 -- | Create a 'Tagged' from a list of values with optional tags
 fromAssocList :: [(Maybe t, a)] -> Tagged t a
